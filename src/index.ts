@@ -1,14 +1,16 @@
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
-import compression from "compression";
+import compression from "compression"; // agar data yang di-hit agar lebih cepat
 import helmet from "helmet";
 import cors from "cors";
 import { config as dotenv } from "dotenv";
 // Routers
 import UserRoutes from "./routers/UserRoutes";
 import AuthRoutes from "./routers/AuthRoutes";
-
+import TodoRoutes from "./routers/TodoRoutes";
+const swaggerUi = require("swagger-ui-express");
+const apiDocumentation = require("../apidocs.json");
 class App {
   public app: Application;
 
@@ -32,16 +34,19 @@ class App {
     });
     this.app.use("/api/v1/users", UserRoutes);
     this.app.use("/api/v1/auth", AuthRoutes);
+    this.app.use("/api/v1/todos", TodoRoutes);
   }
 }
 
 const port: number = 8000;
 const app = new App().app;
+
 app.listen(port, () => {
   console.log("Aplikasi ini berjalan di port " + port);
 
   console.log(process.env.DB_USER);
 });
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(apiDocumentation));
 // const app = express();
 
 // app.route("/").get((req, res) => {
